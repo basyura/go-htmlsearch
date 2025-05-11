@@ -1,1 +1,5 @@
 *.exe
+*.db
+htmlsearch
+html_files
+config.json
