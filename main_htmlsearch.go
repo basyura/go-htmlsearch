@@ -32,6 +32,8 @@ func doMain() error {
 		return err
 	}
 
+	fmt.Println(config)
+
 	e := echo.New()
 
 	db, err := sql.Open("sqlite3", config.DbFile)
@@ -131,7 +133,7 @@ const htmlTemplate = `
   {{range .Results}}
     <div class="result">
       <div class="title">
-        <a href="{{.BaseUrl}}{{.Filename}}" target="_blank">{{.Title}}</a>
+        <a href="{{$.BaseUrl}}{{.Filename}}" target="_blank">{{.Title}}</a>
       </div>
       <div class="content">{{.Snippet}}</div>
     </div>
