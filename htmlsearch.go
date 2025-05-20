@@ -19,22 +19,20 @@ type Result struct {
 	Snippet  string
 }
 
-func main() {
-	if err := doMain(); err != nil {
-		fmt.Println(err)
-	}
+func init() {
+	Run = mainRun
 }
 
-func doMain() error {
+func mainRun() *echo.Echo {
 
+	e := echo.New()
 	config, err := config.NewConfig()
 	if err != nil {
-		return err
+		e.Logger.Fatal(err)
+		return nil
 	}
 
 	fmt.Println(config)
-
-	e := echo.New()
 
 	db, err := sql.Open("sqlite3", config.DbFile)
 	if err != nil {
@@ -98,9 +96,9 @@ func doMain() error {
 		})
 	})
 
-	e.Logger.Fatal(e.Start(":" + strconv.Itoa(config.Port)))
+	go e.Logger.Fatal(e.Start(":" + strconv.Itoa(config.Port)))
 
-	return nil
+	return e
 }
 
 const htmlTemplate = `
