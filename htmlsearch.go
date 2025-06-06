@@ -118,6 +118,7 @@ const htmlTemplate = `
       font-weight:bold;
   }
   .content {
+      font-size:80%;
   }
   </style>
 </head>
@@ -128,16 +129,54 @@ const htmlTemplate = `
     <input type="submit" value="検索">
   </form>
   <hr>
-  {{range .Results}}
-    <div class="result">
-      <div class="title">
-        <a href="{{$.BaseUrl}}{{.Filename}}" target="_blank">{{.Title}}</a>
-      </div>
-      <div class="content">{{.Snippet}}</div>
+  <div id="container" style="display: flex; height: 80vh; overflow: hidden;">
+    <!-- 左: 検索結果リスト -->
+    <div id="sidebar" style="width: 25%; overflow-y: auto; padding-right: 10px;">
+      {{range .Results}}
+        <div class="result">
+          <div class="title">
+            <a href="{{$.BaseUrl}}{{.Filename}}" target="resultFrame">{{.Title}}</a>
+          </div>
+          <div class="content">{{.Snippet}}</div>
+        </div>
+      {{else}}
+        {{if .Query}}<p>該当なし</p>{{end}}
+      {{end}}
     </div>
-  {{else}}
-    {{if .Query}}<p>該当なし</p>{{end}}
-  {{end}}
+
+    <!-- ドラッグバー -->
+    <div id="divider" style="width: 5px; cursor: ew-resize; background-color: #ccc;"></div>
+
+    <!-- 右: iframe 表示 -->
+    <div style="flex-grow: 1; height: 100%;">
+      <iframe name="resultFrame" style="width: 100%; height: 100%; border: none;"></iframe>
+    </div>
+  </div>
+
+  <script>
+    const divider = document.getElementById('divider');
+    const sidebar = document.getElementById('sidebar');
+    const container = document.getElementById('container');
+
+    divider.addEventListener('mousedown', function (e) {
+      e.preventDefault();
+      document.addEventListener('mousemove', resize);
+      document.addEventListener('mouseup', stopResize);
+    });
+
+    function resize(e) {
+      const containerRect = container.getBoundingClientRect();
+      const newWidth = e.clientX - containerRect.left;
+      if (newWidth > 100 && newWidth < containerRect.width - 100) {
+        sidebar.style.width = newWidth + 'px';
+      }
+    }
+
+    function stopResize() {
+      document.removeEventListener('mousemove', resize);
+      document.removeEventListener('mouseup', stopResize);
+    }
+  </script>
 </body>
 </html>
 `
